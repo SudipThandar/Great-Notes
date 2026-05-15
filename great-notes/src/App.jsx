@@ -16,7 +16,6 @@ function App() {
     content: '',
     favorite: false,
   })
-
   const filteredNotes = notes.filter(note =>
 
     note.title

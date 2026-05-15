@@ -21,7 +21,7 @@ body{
   overflow:hidden;
   isolation:isolate;
 
- background-image: url('/main-bg.png');
+ background-image: url('/main-bg.webp');
 
 background-size: cover;
 
