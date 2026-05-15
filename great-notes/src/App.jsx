@@ -6,6 +6,8 @@ function App() {
 
   const [notes, setNotes] = useState([])
 
+  const [highGlow, setHighGlow] = useState(true)
+
   const [search, setSearch] = useState("")
 
   const [currentNote, setCurrentNote] = useState({
@@ -22,6 +24,11 @@ function App() {
       .includes(search.toLowerCase())
 
   )
+
+  const toggleGlow = () => {
+
+  setHighGlow(prev => !prev)
+}
 
   const createNewNote = () => {
 
@@ -56,10 +63,20 @@ function App() {
 
     } else {
 
-      const newNote = {
+     const newNote = {
         ...currentNote,
         id: Date.now(),
+
+        date:
+          new Date().toLocaleDateString(
+            "en-US",
+      {
+        month:"long",
+        day:"numeric",
+        year:"numeric",
       }
+    )
+}
 
       setNotes(prev => [...prev, newNote])
     }
@@ -98,8 +115,15 @@ function App() {
 
   const openNote = (note) => {
 
-    setCurrentNote(note)
-  }
+  setCurrentNote({
+    id: note.id,
+    title: note.title,
+    content: note.content,
+    favorite: note.favorite,
+  })
+
+  
+}
 
   return (
 
@@ -107,7 +131,7 @@ function App() {
 
       {/* RAIL */}
 
-      <div className="rail">
+      <div className={`rail ${highGlow ? "high-glow" : "low-glow"}`}>
 
         <button onClick={() => setPage('home')}>
           ⌘
@@ -125,8 +149,8 @@ function App() {
           🗐
         </button>
 
-        <button onClick={() => setPage('trash')}>
-          🗑
+        <button onClick={toggleGlow}>
+          ◐
         </button>
 
         <button
@@ -239,9 +263,21 @@ function App() {
                   onClick={() => openNote(note)}
                 >
 
-                  <h3>
-                    {note.title || 'Untitled Note'}
-                  </h3>
+                  <div className="note-title-row">
+
+                    <h3>
+                      {note.title || 'Untitled Note'}
+                    </h3>
+
+                    {note.favorite && (
+
+                      <span className="favorite-star">
+                        ⭐
+                      </span>
+
+                    )}
+
+                  </div>
 
                   <p>
                     {note.content.slice(0, 45)}
@@ -279,20 +315,13 @@ function App() {
 
                     <button
                       className="preview-action-btn"
-                      onClick={createNewNote}
+
+                      onClick={() => {
+
+                        setPage('editor')
+                      }}
                     >
                       ✎
-                    </button>
-
-                    <button
-                      className="preview-action-btn"
-                      onClick={() =>
-                        setCurrentNote(
-                          notes[notes.length - 1] || currentNote
-                        )
-                      }
-                    >
-                      ⟳
                     </button>
 
                   </div>
@@ -360,7 +389,7 @@ function App() {
                 />
 
                 <p className="editor-date">
-                  May 10, 2026
+                   {currentNote.date || "New Note"}
                 </p>
 
               </div>
@@ -411,36 +440,160 @@ function App() {
 
       )}
 
-      {/* FAVORITES */}
+    {page === 'favorites' && (
 
-      {page === 'favorites' && (
+  <div className="notes-panel">
 
-        <div className="center-page">
+    <div className="notes-sidebar">
 
-          <h1>Favorites</h1>
+      <div className="sidebar-top">
 
-          {notes
-            .filter(note => note.favorite)
-            .map(note => (
+        <h2>Favorites</h2>
 
-              <div
-                key={note.id}
-                className="note-item"
+        <span className="notes-count"> {
+          notes.filter(
+            note => note.favorite
+          ).length
+        }
 
-                onClick={() => openNote(note)}
-              >
+        </span>
 
-                <h3>{note.title}</h3>
+      </div>
 
-                <p>{note.content}</p>
+      <input
+        type="text"
+
+        placeholder="Search favorites..."
+
+        className="search-bar"
+
+        value={search}
+
+        onChange={(e) =>
+          setSearch(e.target.value)
+        }
+      />
+
+      <div className="notes-list">
+
+        {notes
+
+          .filter(note => note.favorite)
+
+          .filter(note =>
+
+            note.title
+              .toLowerCase()
+              .includes(
+                search.toLowerCase()
+              )
+
+          )
+
+          .map(note => (
+
+            <div
+              key={note.id}
+
+              className={`note-item ${
+                currentNote?.id === note.id
+                  ? 'active'
+                  : ''
+              }`}
+
+              onClick={() => openNote(note)}
+            >
+
+              <div className="note-title-row">
+
+                <h3>
+                  {note.title || 'Untitled Note'}
+                </h3>
+
+                <span className="favorite-star">
+                  ⭐
+                </span>
 
               </div>
 
-            ))}
+              <p>
+                {
+                  note.content ||
+                  'Empty note'
+                }
+              </p>
+
+            </div>
+
+        ))}
+
+      </div>
+
+    </div>
+
+    <div className="note-preview">
+
+      {currentNote ? (
+
+        <>
+
+          <div className="preview-top">
+
+            <div>
+
+              <h2>
+                {currentNote.title}
+              </h2>
+
+              <p>Preview</p>
+
+            </div>
+
+            <div className="preview-icons">
+
+              <button
+                className="preview-action-btn"
+
+                onClick={() => {
+                  setPage('editor')
+                }}
+              >
+                ✎
+              </button>
+
+            </div>
+
+          </div>
+
+          <h1 className="preview-title">
+
+            {currentNote.title}
+
+          </h1>
+
+          <div className="preview-body">
+
+            {currentNote.content}
+
+          </div>
+
+        </>
+
+      ) : (
+
+        <div className="empty-preview">
+
+          Select a favorite note
 
         </div>
 
       )}
+
+    </div>
+
+  </div>
+
+)}
 
       {/* PROFILE */}
 
@@ -458,21 +611,7 @@ function App() {
 
       )}
 
-      {/* TRASH */}
-
-      {page === 'trash' && (
-
-        <div className="center-page">
-
-          <h1>Trash</h1>
-
-          <p>
-            Deleted notes disappear for now.
-          </p>
-
-        </div>
-
-      )}
+      
 
     </div>
   )
