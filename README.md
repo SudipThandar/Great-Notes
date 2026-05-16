@@ -13,7 +13,7 @@ A modern, full-stack note-taking application with Google OAuth authentication.
 - 🔒 Row Level Security (RLS) for data privacy
 - 🎨 Beautiful, responsive UI
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -84,14 +84,14 @@ npm run dev
 
 Visit http://localhost:5173
 
-## 📚 Documentation
+## Documentation
 
 - [Startup Guide](STARTUP_GUIDE.md) - Quick start instructions
 - [API Documentation](Backend/docs/API.md) - API endpoints reference
 - [Supabase Setup](docs/supabase-setup-guide.md) - Database configuration
 - [Implementation Status](docs/implementation-status.md) - Project progress
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - React 18
@@ -130,7 +130,7 @@ Great-Notes/
 └── docs/               # Documentation
 ```
 
-## 🔐 Security
+## Security
 
 - JWT-based authentication
 - Row Level Security (RLS) policies
@@ -138,7 +138,7 @@ Great-Notes/
 - Secure token handling
 - CORS configuration
 
-## 🎯 API Endpoints
+## API Endpoints
 
 - `GET /api/notes` - List notes
 - `POST /api/notes` - Create note
@@ -156,17 +156,3 @@ Full API docs: http://localhost:8000/docs
 cd Backend
 pytest tests/
 ```
-
-## 📝 License
-
-MIT
-
-## 👥 Contributing
-
-Contributions welcome! Please read the contributing guidelines first.
-
----
-
-**Status:** ✅ Fully Functional
-
-Built with ❤️ using FastAPI, React, and Supabase
