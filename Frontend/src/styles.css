@@ -1315,3 +1315,68 @@ background-color: #050816;
 
   text-decoration:none;
 }
+
+.auth-divider{
+
+  display:flex;
+
+  align-items:center;
+
+  margin:28px 0;
+
+  color:#7d7d7d;
+
+  font-size:14px;
+}
+
+.auth-divider::before,
+.auth-divider::after{
+
+  content:"";
+
+  flex:1;
+
+  height:1px;
+
+  background:
+    rgba(255,255,255,0.1);
+}
+
+.auth-divider span{
+
+  padding:0 18px;
+
+  margin:0;
+}
+
+.google-btn{
+
+  background:
+    rgba(255,255,255,0.95) !important;
+
+  color:#3c4043 !important;
+
+  display:flex !important;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:12px;
+
+  font-weight:500 !important;
+
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.15) !important;
+
+  margin-top:0 !important;
+}
+
+.google-btn:hover{
+
+  background:
+    rgba(255,255,255,1) !important;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.20) !important;
+}

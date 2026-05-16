@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import {
   Routes,
@@ -9,6 +9,9 @@ import {
 
 import Login from './components/Login'
 import Signup from './components/Signup'
+import AuthCallback from './components/AuthCallback'
+import { supabase } from './lib/supabase'
+import { notesService } from './services/notes'
 
 
 function App() {
@@ -21,12 +24,69 @@ function App() {
 
   const [search, setSearch] = useState("")
 
+  const [user, setUser] = useState(null)
+
+  const [loading, setLoading] = useState(false)
+
   const [currentNote, setCurrentNote] = useState({
     id: null,
     title: '',
     content: '',
     favorite: false,
   })
+
+  // Fetch user session on mount
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Load notes when user logs in
+  useEffect(() => {
+    if (user) {
+      loadNotes()
+    } else {
+      setNotes([])
+    }
+  }, [user])
+
+  // Load notes from backend
+  const loadNotes = async () => {
+    if (!user) return
+    
+    setLoading(true)
+    try {
+      const fetchedNotes = await notesService.getNotes()
+      const transformedNotes = fetchedNotes.map(note => ({
+        id: note.id,
+        title: note.title,
+        content: note.content,
+        favorite: note.is_favorite,
+        date: new Date(note.created_at).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric"
+        })
+      }))
+      setNotes(transformedNotes)
+    } catch (error) {
+      console.error('Failed to load notes:', error)
+      alert('Failed to load notes. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
   const filteredNotes = notes.filter(note =>
 
     note.title
@@ -52,8 +112,7 @@ function App() {
     setPage('editor')
   }
 
-  const saveNote = () => {
-
+  const saveNote = async () => {
     if (
       currentNote.title.trim() === '' &&
       currentNote.content.trim() === ''
@@ -61,66 +120,84 @@ function App() {
       return
     }
 
-    if (currentNote.id) {
-
-      setNotes(prev =>
-        prev.map(note =>
-          note.id === currentNote.id
-            ? currentNote
-            : note
-        )
-      )
-
-    } else {
-
-     const newNote = {
-        ...currentNote,
-        id: Date.now(),
-
-        date:
-          new Date().toLocaleDateString(
-            "en-US",
-      {
-        month:"long",
-        day:"numeric",
-        year:"numeric",
+    setLoading(true)
+    try {
+      if (currentNote.id) {
+        // Update existing note
+        await notesService.updateNote(currentNote.id, currentNote)
+      } else {
+        // Create new note
+        const newNote = await notesService.createNote(currentNote)
+        setCurrentNote(prev => ({
+          ...prev,
+          id: newNote.id
+        }))
       }
-    )
-}
-
-      setNotes(prev => [...prev, newNote])
+      
+      // Reload notes from backend
+      await loadNotes()
+      setPage('notes')
+    } catch (error) {
+      console.error('Failed to save note:', error)
+      alert('Failed to save note. Please try again.')
+    } finally {
+      setLoading(false)
     }
-
-    setPage('notes')
   }
 
-  const toggleFavorite = () => {
-
+  const toggleFavorite = async () => {
+    const newFavoriteState = !currentNote.favorite
+    
+    // Optimistic update
     setCurrentNote(prev => ({
       ...prev,
-      favorite: !prev.favorite,
+      favorite: newFavoriteState,
     }))
+
+    if (currentNote.id) {
+      try {
+        await notesService.updateNote(currentNote.id, {
+          ...currentNote,
+          favorite: newFavoriteState
+        })
+        await loadNotes()
+      } catch (error) {
+        console.error('Failed to update favorite:', error)
+        // Revert on error
+        setCurrentNote(prev => ({
+          ...prev,
+          favorite: !newFavoriteState,
+        }))
+        alert('Failed to update favorite')
+      }
+    }
   }
 
-  const deleteNote = () => {
-
+  const deleteNote = async () => {
     if (!currentNote.id) {
       setPage('notes')
       return
     }
 
-    setNotes(prev =>
-      prev.filter(note => note.id !== currentNote.id)
-    )
-
-    setCurrentNote({
-      id: null,
-      title: '',
-      content: '',
-      favorite: false,
-    })
-
-    setPage('notes')
+    setLoading(true)
+    try {
+      await notesService.deleteNote(currentNote.id)
+      await loadNotes()
+      
+      setCurrentNote({
+        id: null,
+        title: '',
+        content: '',
+        favorite: false,
+      })
+      
+      setPage('notes')
+    } catch (error) {
+      console.error('Failed to delete note:', error)
+      alert('Failed to delete note. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const openNote = (note) => {
@@ -223,8 +300,8 @@ function App() {
             <div className="profile-circle"></div>
 
             <div>
-              <h3>Sudip</h3>
-              <p>greatnotes@example.com</p>
+              <h3>{user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Guest'}</h3>
+              <p>{user?.email || 'Not logged in'}</p>
             </div>
 
           </button>
@@ -450,8 +527,9 @@ function App() {
           <button
             className="save-btn"
             onClick={saveNote}
+            disabled={loading}
           >
-            Save
+            {loading ? 'Saving...' : 'Save'}
           </button>
 
         </div>
@@ -622,7 +700,7 @@ function App() {
           <h1>Profile</h1>
 
           <p>
-            Logged in as Sudip
+            Logged in as {user?.user_metadata?.full_name || user?.email || 'Guest'}
           </p>
 
         </div>
@@ -644,6 +722,11 @@ function App() {
     <Route
       path="/signup"
       element={<Signup />}
+    />
+
+    <Route
+      path="/auth/callback"
+      element={<AuthCallback />}
     />
 
   </Routes>

@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Context7 Documentation Helper",
+  "description": "Automatically consults Context7 for documentation help when working with specific modules or components during development",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "write"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Before proceeding with this operation, check if you need documentation help for any specific module, library, or component involved. If you're working with external libraries (like React, FastAPI, Supabase, etc.) or unfamiliar APIs, use Context7 to look up relevant documentation first. This will help ensure you're following best practices and using the correct APIs."
+  }
+}

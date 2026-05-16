@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Update Tasks on Completion",
+  "description": "Automatically updates docs/tasks.md when a task is completed - marks tasks as done and updates frontend integration requirements if backend work affects frontend",
+  "version": "1",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A task has just been completed. Please:\n1. Read docs/tasks.md to understand the current task status\n2. Identify which task was just completed based on recent work\n3. Update the task checkbox from [ ] to [x] for the completed task\n4. If the completed task involves backend API development (routes, services, schemas), check the \"Frontend Catch-Up Requirements\" section at the end of docs/tasks.md\n5. If frontend integration is needed for the completed backend feature, add a note or update the relevant frontend task to indicate which backend endpoint/feature is now ready\n6. Update the task status from \"Not Started\" to \"Completed\" if the entire section is done\n7. Be concise - only update what's necessary based on the completed task"
+  }
+}
