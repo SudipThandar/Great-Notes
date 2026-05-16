@@ -1,4 +1,15 @@
+import React from 'react'
+
 import { useState } from 'react'
+
+import {
+  Routes,
+  Route
+} from 'react-router-dom'
+
+import Login from './components/Login'
+import Signup from './components/Signup'
+
 
 function App() {
 
@@ -124,9 +135,17 @@ function App() {
   
 }
 
-  return (
+  return(
 
-    <div className="app">
+  <Routes>
+
+    <Route
+
+      path="/"
+
+      element={(
+
+        <div className="app">
 
       {/* RAIL */}
 
@@ -198,7 +217,7 @@ function App() {
 
           <button
             className="profile-card"
-            onClick={() => setPage('profile')}
+           onClick={() => window.location.href='/login'}
           >
 
             <div className="profile-circle"></div>
@@ -611,9 +630,24 @@ function App() {
       )}
 
       
+        </div>
 
-    </div>
-  )
+      )}
+
+    />
+
+    <Route
+      path="/login"
+      element={<Login />}
+    />
+
+    <Route
+      path="/signup"
+      element={<Signup />}
+    />
+
+  </Routes>
+)
+
 }
-
 export default App

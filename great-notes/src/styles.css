@@ -1127,3 +1127,191 @@ background-color: #050816;
 
   font-weight:500;
 }
+
+.auth-page{
+
+  width:100%;
+  height:100vh;
+
+  padding: 40px 0;
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  position:relative;
+
+  overflow:hidden;
+
+  background-image:url('/main-bg.png');
+
+  background-size:cover;
+
+  background-position:center;
+}
+
+.auth-overlay{
+
+  position:absolute;
+
+  inset:0;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(0,0,0,0.45),
+      rgba(20,10,40,0.30)
+    );
+
+  backdrop-filter:blur(3px);
+}
+
+.auth-card{
+
+  width:480px;
+
+  padding:45px 55px;
+
+  border-radius:36px;
+
+  position:relative;
+
+  z-index:2;
+
+  background:
+    rgba(255,255,255,0.05);
+
+  backdrop-filter:blur(20px);
+
+  border:
+    1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 0 120px rgba(181,156,255,0.12);
+
+  display:flex;
+
+  flex-direction:column;
+}
+
+.auth-icon{
+
+  color:#B59CFF;
+
+  font-size:28px;
+
+  margin-bottom:20px;
+
+  text-align:center;
+}
+
+.auth-card h1{
+
+  color:white;
+
+  font-size:56px;
+
+  font-weight:300;
+
+  text-align:center;
+
+  margin-bottom:10px;
+
+  font-family:'Cormorant Garamond',serif;
+}
+
+.auth-card p{
+
+  color:#a9a9a9;
+
+  text-align:center;
+
+  margin-bottom:40px;
+
+  font-size:18px;
+}
+
+.auth-card input{
+
+  width:100%;
+
+  height:58px;
+
+  border:none;
+
+  outline:none;
+
+  border-radius:18px;
+
+  background:
+    rgba(255,255,255,0.05);
+
+  margin-bottom:18px;
+
+  padding:0 22px;
+
+  color:white;
+
+  font-size:16px;
+}
+
+.auth-card input::placeholder{
+
+  color:#9d9d9d;
+}
+
+.auth-card button{
+
+  width:100%;
+
+  height:60px;
+
+  border:none;
+
+  border-radius:999px;
+
+  background:#B59CFF;
+
+  color:white;
+
+  font-size:18px;
+
+  font-weight:500;
+
+  cursor:pointer;
+
+  margin-top:10px;
+
+  box-shadow:
+    0 10px 30px rgba(181,156,255,0.35);
+
+  transition:0.3s ease;
+}
+
+.auth-card button:hover{
+
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 14px 40px rgba(181,156,255,0.42);
+}
+
+.auth-card span{
+
+  margin-top:28px;
+
+  text-align:center;
+
+  color:#a9a9a9;
+}
+
+.auth-card a{
+
+  color:#B59CFF;
+
+  margin-left:8px;
+
+  text-decoration:none;
+}
