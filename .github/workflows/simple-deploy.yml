@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       - name: Deploy Status
         run: |
@@ -18,3 +18,7 @@ jobs:
           echo "📦 Backend: Render will auto-deploy"
           echo "🎨 Frontend: Vercel will auto-deploy"
           echo "✅ Push detected - deployments triggered!"
+          echo ""
+          echo "Monitor deployments:"
+          echo "- Vercel: https://vercel.com/mikeysanhams-projects/great-notes"
+          echo "- Render: https://dashboard.render.com"
