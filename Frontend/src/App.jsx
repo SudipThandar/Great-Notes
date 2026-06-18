@@ -1,5 +1,3 @@
-import React from 'react'
-
 import { useState, useEffect } from 'react'
 
 import {
@@ -35,35 +33,9 @@ function App() {
     favorite: false,
   })
 
-  // Fetch user session on mount
-  useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-    })
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-    return () => subscription.unsubscribe()
-  }, [])
-
-  // Load notes when user logs in
-  useEffect(() => {
-    if (user) {
-      loadNotes()
-    } else {
-      setNotes([])
-    }
-  }, [user])
-
   // Load notes from backend
-  const loadNotes = async () => {
-    if (!user) return
+  const loadNotes = async (currentUser) => {
+    if (!currentUser) return
     
     setLoading(true)
     try {
@@ -87,6 +59,31 @@ function App() {
       setLoading(false)
     }
   }
+
+  // Fetch user session on mount
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const u = session?.user ?? null
+      setUser(u)
+      loadNotes(u)
+    })
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const u = session?.user ?? null
+      setUser(u)
+      if (u) {
+        loadNotes(u)
+      } else {
+        setNotes([])
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
   const filteredNotes = notes.filter(note =>
 
     note.title
@@ -135,7 +132,7 @@ function App() {
       }
       
       // Reload notes from backend
-      await loadNotes()
+      await loadNotes(user)
       setPage('notes')
     } catch (error) {
       console.error('Failed to save note:', error)
@@ -160,7 +157,7 @@ function App() {
           ...currentNote,
           favorite: newFavoriteState
         })
-        await loadNotes()
+        await loadNotes(user)
       } catch (error) {
         console.error('Failed to update favorite:', error)
         // Revert on error
@@ -182,7 +179,7 @@ function App() {
     setLoading(true)
     try {
       await notesService.deleteNote(currentNote.id)
-      await loadNotes()
+      await loadNotes(user)
       
       setCurrentNote({
         id: null,
