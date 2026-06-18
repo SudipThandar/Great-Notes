@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 
 import {
   Routes,
-  Route
+  Route,
+  useNavigate
 } from 'react-router-dom'
 
 import Login from './components/Login'
@@ -13,6 +14,7 @@ import { notesService } from './services/notes'
 
 
 function App() {
+  const navigate = useNavigate()
 
   const [page, setPage] = useState('home')
 
@@ -291,7 +293,7 @@ function App() {
 
           <button
             className="profile-card"
-           onClick={() => window.location.href='/login'}
+            onClick={() => navigate('/login')}
           >
 
             <div className="profile-circle"></div>
